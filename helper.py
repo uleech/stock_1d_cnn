@@ -2,14 +2,17 @@ import numpy as np
 import pandas as pd
 
 def process_data(data, timePortion) :
+    data = data.iloc[::-1]
     size = int(len(data) / len(data.columns))
     trainX = []
     trainY = [] 
     features = []
+    days = []
     
     for i in range(0, size):
         v = float(data['Close'][i].replace('$','').replace(' ','')) 
         features.append(v)
+        days.append(data['Date'][i])
 
     # Scale the values
     scaledData = minMaxScaler(features, np.min(features), np.max(features))
@@ -31,6 +34,7 @@ def process_data(data, timePortion) :
         "min": scaledData["min"],
         "max": scaledData["max"],
         "originalData": features,
+        'date' : days
     }
 
 def minMaxScaler (data, min, max) :
@@ -48,9 +52,9 @@ def minMaxInverseScaler(data, min, max) :
         "min": min,
         "max": max
     }
-def generate(filename) :
+def generate(filename, timeportion) :
     v = pd.read_csv(filename)
-    ret = process_data(v, 7)
+    ret = process_data(v, timeportion)
     print (ret)
     return ret
     

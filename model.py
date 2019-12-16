@@ -1,6 +1,7 @@
 import tensorflow as tf
 import helper
 from tensorflow import keras
+import numpy as np
 
 class StockModel(keras.Model):
     def __init__(self):
@@ -26,7 +27,22 @@ class StockModel(keras.Model):
         )
         self.model.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
+    def fit(self, datax, datay, epochs):
+        self.model.fit(datax, datay, shuffle = True, epochs = epochs)
+    
+    def predict(self, datax):
+        return self.model.predict(datax)
+
 if __name__ == '__main__':
-    data = helper.generate('appl.csv')
-    print (data)
+    timeportion = 7
+
+    data = helper.generate('appl.csv', timeportion)
+
+    datax = np.array(data['trainX'])
+    datay = np.array(data['trainY'])
+    
+    datax = np.reshape(datax, [int(len(datax) / timeportion), timeportion, 1])
+    datax = datax[0:len(datax) - 1]
     model = StockModel()
+
+    model.fit(datax, datay, 100)
